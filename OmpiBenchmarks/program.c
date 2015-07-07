@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
     double *partialBuffer = malloc(myPointCount * dimension * sizeof(double));
     double *fullBuffer = malloc(pointCount * dimension * sizeof(double));
 
-    for (int i = 0; i < iter; ++i)
+    int i
+    for (i = 0; i < iter; ++i)
     {
         GenerateRandomPoints(myPointCount, dimension, partialBuffer);
         PrintPointsByRank(myPointCount, dimension, partialBuffer);
@@ -63,7 +64,8 @@ int main(int argc, char* argv[])
 }
 
 void PrintPointsByRank(int count, int dimension, double *points) {
-    for (int rank = 0; rank < procCount; ++rank){
+    int rank;
+    for (rank = 0; rank < procCount; ++rank){
         int buff[1];
         if (rank == 0){
             buff[0] = rank;
@@ -71,8 +73,10 @@ void PrintPointsByRank(int count, int dimension, double *points) {
         MPI_Bcast(buff, 1, MPI_INT, 0, MPI_COMM_WORLD);
         if (buff[0] == procRank){
             printf("Rank: %d partial buffer ... \n", procRank);
-            for (int i = 0; i < count; ++i){
-                for (int j = 0; j < dimension; ++j){
+            int i;
+            for (i = 0; i < count; ++i){
+                int j;
+                for (j = 0; j < dimension; ++j){
                     printf("%lf\t", points[i*dimension+j]);
                 }
                 printf("\n");
@@ -87,7 +91,8 @@ void AllGather(double *partialBuffer, double *fullBuffer, int dimension) {
     ComputeMessageLengths(dimension, lengths);
     int displas[procCount];
     displas[0] = 0;
-    for (int i = 0; i < procCount - 1; ++i)
+    int i;
+    for (i = 0; i < procCount - 1; ++i)
     {
         displas[i+1] = displas[i] + lengths[i];
     }
@@ -97,7 +102,8 @@ void AllGather(double *partialBuffer, double *fullBuffer, int dimension) {
 void ComputeMessageLengths(int dimension, int lengths[]) {
     int q = pointCount/procCount;
     int r = pointCount%procCount;
-    for (int i = 0; i < procCount; ++i)
+    int i;
+    for (i = 0; i < procCount; ++i)
     {
         lengths[i] = dimension *(i < r ? q+1 : q);
     }
