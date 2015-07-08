@@ -24,6 +24,8 @@ void ComputeMessageLengths(int dimension, int lengths[]);
 
 void PrintPointsByRank(char* prefix, int count, int dimension, double *points);
 
+double currentTimeInSeconds(void);
+
 int main(int argc, char* argv[])
 {
     int rank, size, len;
@@ -48,13 +50,22 @@ int main(int argc, char* argv[])
     double *fullBuffer = malloc(pointCount * dimension * sizeof(double));
 
     int i;
+    double t = 0.0;
     for (i = 0; i < iter; ++i)
     {
         GenerateRandomPoints(myPointCount, dimension, partialBuffer);
-        PrintPointsByRank("partial", myPointCount, dimension, partialBuffer);
+        /*PrintPointsByRank("partial", myPointCount, dimension, partialBuffer);*/
+        double t1 = currentTimeInSeconds();
         AllGather(partialBuffer, fullBuffer, dimension);
-        PrintPointsByRank("full", pointCount, dimension, fullBuffer);
+        double t2 = currentTimeInSeconds();
+        t += (t2 - t1);
+        /*PrintPointsByRank("full", pointCount, dimension, fullBuffer);*/
     }
+
+    if (procRank == 0){
+        printf("Allgatherv time %e seconds", t);
+    }
+
     free(partialBuffer);
     free(fullBuffer);
 
@@ -125,3 +136,18 @@ void print(char* msg, ...){
     vprintf(msg, args);
     va_end(args);
 }
+
+double currentTimeInSeconds(void)
+{
+
+    int flag;
+    clockid_t cid = CLOCK_REALTIME; // CLOCK_MONOTONE might be better
+    timespec tp;
+    double timing;
+
+    flag = clock_gettime(cid, &tp);
+    if (flag == 0) timing = tp.tv_sec + 1.0e-9*tp.tv_nsec;
+    else           timing = -17.0;         // If timer failed, return non-valid time
+
+    return(timing);
+};
