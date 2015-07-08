@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     double *partialBuffer = malloc(myPointCount * dimension * sizeof(double));
     double *fullBuffer = malloc(pointCount * dimension * sizeof(double));
 
-    int i
+    int i;
     for (i = 0; i < iter; ++i)
     {
         GenerateRandomPoints(myPointCount, dimension, partialBuffer);
@@ -121,7 +121,7 @@ void GenerateRandomPoints(int count, int dimension, double *pDouble) {
 void print(char* msg, ...){
     if (procRank != 0) return;
     va_list args;
-    va_start(args, message);
+    va_start(args, msg);
     vprintf(msg, args);
     va_end(args);
 }
