@@ -67,7 +67,7 @@ void PrintPointsByRank(char* prefix, int count, int dimension, double *points) {
     int rank;
     for (rank = 0; rank < procCount; ++rank){
         int buff[1];
-        if (rank == 0){
+        if (procRank == 0){
             buff[0] = rank;
         }
         MPI_Bcast(buff, 1, MPI_INT, 0, MPI_COMM_WORLD);
