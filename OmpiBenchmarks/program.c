@@ -22,7 +22,7 @@ void AllGather(double *partialBuffer, double *fullBuffer, int dimension);
 
 void ComputeMessageLengths(int dimension, int lengths[]);
 
-void PrintPointsByRank(int count, int dimension, double *points);
+void PrintPointsByRank(char* prefix, int count, int dimension, double *points);
 
 int main(int argc, char* argv[])
 {
@@ -51,9 +51,9 @@ int main(int argc, char* argv[])
     for (i = 0; i < iter; ++i)
     {
         GenerateRandomPoints(myPointCount, dimension, partialBuffer);
-        PrintPointsByRank(myPointCount, dimension, partialBuffer);
+        PrintPointsByRank("partial", myPointCount, dimension, partialBuffer);
         AllGather(partialBuffer, fullBuffer, dimension);
-        PrintPointsByRank(myPointCount, dimension, fullBuffer);
+        PrintPointsByRank("full", pointCount, dimension, fullBuffer);
     }
     free(partialBuffer);
     free(fullBuffer);
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void PrintPointsByRank(int count, int dimension, double *points) {
+void PrintPointsByRank(char* prefix, int count, int dimension, double *points) {
     int rank;
     for (rank = 0; rank < procCount; ++rank){
         int buff[1];
@@ -72,7 +72,7 @@ void PrintPointsByRank(int count, int dimension, double *points) {
         }
         MPI_Bcast(buff, 1, MPI_INT, 0, MPI_COMM_WORLD);
         if (buff[0] == procRank){
-            printf("Rank: %d partial buffer ... \n", procRank);
+            printf("Rank: %d %s buffer ... \n", procRank, prefix);
             int i;
             for (i = 0; i < count; ++i){
                 int j;
