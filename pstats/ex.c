@@ -33,6 +33,9 @@ main(int argc, char *argv[])
 
    printf("CPU_COUNT() of set:    %d\n", CPU_COUNT_S(size, cpusetp));
 
+	 int rt = sched_getaffinity(0,num_cpus,cpusetp);
+	 printf("\n%08x\n", cpusetp);
+
    CPU_FREE(cpusetp);
    exit(EXIT_SUCCESS);
 }
