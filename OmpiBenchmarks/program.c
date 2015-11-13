@@ -1,6 +1,7 @@
 //
 // Created by Saliya on 7/6/2015.
 //
+#define _POSIX_C_SOURCE 199309L
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,8 +36,8 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
     MPI_Comm_size(MPI_COMM_WORLD, &procCount);
     MPI_Get_library_version(version, &len);
-    printf("Hello, world, I am %d of %d, (%s, %d)\n",
-           procRank, procCount, version, len);
+    /*printf("Hello, world, I am %d of %d, (%s, %d)\n",
+           procRank, procCount, version, len);*/
 
     pointCount = (int) strtol(argv[1], NULL, 10);
     dimension = (int) strtol(argv[2], NULL, 10);
@@ -142,7 +143,7 @@ double currentTimeInSeconds(void)
 
     int flag;
     clockid_t cid = CLOCK_REALTIME; // CLOCK_MONOTONE might be better
-    timespec tp;
+    struct timespec tp;
     double timing;
 
     flag = clock_gettime(cid, &tp);
