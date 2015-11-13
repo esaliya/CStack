@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(OmpiBenchmarks)
 
-include_directories ("/N/u/sekanaya/buildompi-1.8.1/include")
+include_directories ("C:/software/openmpi-1.8.1/ompi/include")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c99")
 
