@@ -16,7 +16,8 @@ int main()
     return 0;
 }
 
-void push(struct IntElement* list, int data)
+void
+push(struct IntElement* list, int data)
 {
     struct IntElement* item = (struct IntElement*)(malloc(sizeof(struct IntElement)));
 
