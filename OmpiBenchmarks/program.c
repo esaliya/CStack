@@ -56,7 +56,8 @@ int main(int argc, char* argv[])
     {
         GenerateRandomPoints(myPointCount, dimension, partialBuffer);
         /*PrintPointsByRank("partial", myPointCount, dimension, partialBuffer);*/
-        double t1 = currentTimeInSeconds();
+	MPI_Barrier(MPI_COMM_WORLD);
+	double t1 = currentTimeInSeconds();
         AllGather(partialBuffer, fullBuffer, dimension);
         double t2 = currentTimeInSeconds();
         t += (t2 - t1);
