@@ -19,7 +19,7 @@ int dimension = 0;
 
 void GenerateRandomPoints(int count, int dimension, double *pDouble);
 
-void AllGather(double *partialBuffer, double *fullBuffer, int dimension);
+double AllGather(double *partialBuffer, double *fullBuffer, int dimension);
 
 void ComputeMessageLengths(int dimension, int lengths[]);
 
@@ -56,11 +56,8 @@ int main(int argc, char* argv[])
     {
         GenerateRandomPoints(myPointCount, dimension, partialBuffer);
         /*PrintPointsByRank("partial", myPointCount, dimension, partialBuffer);*/
-	MPI_Barrier(MPI_COMM_WORLD);
-	double t1 = currentTimeInSeconds();
-        AllGather(partialBuffer, fullBuffer, dimension);
-        double t2 = currentTimeInSeconds();
-        t += (t2 - t1);
+
+        t += AllGather(partialBuffer, fullBuffer, dimension);
         /*PrintPointsByRank("full", pointCount, dimension, fullBuffer);*/
     }
 
@@ -99,7 +96,7 @@ void PrintPointsByRank(char* prefix, int count, int dimension, double *points) {
     }
 }
 
-void AllGather(double *partialBuffer, double *fullBuffer, int dimension) {
+double AllGather(double *partialBuffer, double *fullBuffer, int dimension) {
     int lengths[procCount];
     ComputeMessageLengths(dimension, lengths);
     int displas[procCount];
@@ -109,7 +106,11 @@ void AllGather(double *partialBuffer, double *fullBuffer, int dimension) {
     {
         displas[i+1] = displas[i] + lengths[i];
     }
+    MPI_Barrier(MPI_COMM_WORLD);
+    double t1 = currentTimeInSeconds();
     MPI_Allgatherv(partialBuffer, lengths[procRank], MPI_DOUBLE, fullBuffer, lengths, displas, MPI_DOUBLE, MPI_COMM_WORLD);
+    double t2 = currentTimeInSeconds();
+    return t2 - t1;
 }
 
 void ComputeMessageLengths(int dimension, int lengths[]) {
