@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <time.h>
-#include <pthread.h>
 #include "program.h"
 
 #include "mpi.h"
@@ -68,11 +67,8 @@ int main(int argc, char* argv[])
     {
 
         /*PrintPointsByRank("partial", myPointCount, dimension, partialBuffer);*/
-        MPI_Barrier();
-        double t1 = currentTimeInSeconds();
-        AllGather(partialBuffer, fullBuffer, dimension, lengths, displas);
-        double t2 = currentTimeInSeconds();
-        t += (t2 - t1);
+
+        t += AllGather(partialBuffer, fullBuffer, dimension);
         /*PrintPointsByRank("full", pointCount, dimension, fullBuffer);*/
     }
 
@@ -111,9 +107,21 @@ void PrintPointsByRank(char* prefix, int count, int dimension, double *points) {
     }
 }
 
-void AllGather(double *partialBuffer, double *fullBuffer, int dimension, int lengths[], int displas[])
-{
+double AllGather(double *partialBuffer, double *fullBuffer, int dimension, int lengths[], int displas[]) {
+    int lengths[procCount];
+    ComputeMessageLengths(dimension, lengths);
+    int displas[procCount];
+    displas[0] = 0;
+    int i;
+    for (i = 0; i < procCount - 1; ++i)
+    {
+        displas[i+1] = displas[i] + lengths[i];
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+    double t1 = currentTimeInSeconds();
     MPI_Allgatherv(partialBuffer, lengths[procRank], MPI_DOUBLE, fullBuffer, lengths, displas, MPI_DOUBLE, MPI_COMM_WORLD);
+    double t2 = currentTimeInSeconds();
+    return t2 - t1;
 }
 
 void ComputeMessageLengths(int dimension, int lengths[]) {
